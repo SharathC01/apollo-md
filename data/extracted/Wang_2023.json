@@ -1,0 +1,111 @@
+{
+  "title": "Wang_2023",
+  "year": 2023,
+  "study_design": "Retrospective cohort study",
+  "country": "USA (MIMIC-III database, Beth Israel Deaconess Medical Center, Boston, Massachusetts)",
+  "sample_size": {
+    "value": 1983,
+    "unit": "patients",
+    "source_quote": "A total of 1,983 eligible patients were eventually included, which were randomly divided into training set (n = 1,388) and testing set (n = 595).",
+    "page": 3,
+    "confidence": 0.99
+  },
+  "patient_age_mean": {
+    "value": 67.79,
+    "unit": "years",
+    "source_quote": "The mean age of the total population was 67.79 ± 15.31 years old.",
+    "page": 3,
+    "confidence": 0.99
+  },
+  "sofa_score_baseline": null,
+  "sofa_score_peak": null,
+  "antibiotic_timing_hours": null,
+  "icu_mortality_percent": null,
+  "mortality_predictors": [
+    {
+      "predictor_variable": "LDH (lactate dehydrogenase)",
+      "outcome_definition": "One-year mortality among patients with sepsis",
+      "timing": "Within 24 hours of ICU admission",
+      "statistical_method": "Multivariate logistic regression (Model 1: unadjusted; Model 2: adjusted)",
+      "effect_size": "Model 1: OR = 1.28, 95% CI: 1.09–1.49, P = 0.002; Model 2: adjusted OR = 1.28, 95% CI: 1.18–1.52, P = 0.005",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": "Age, gender, ethnicity, potassium, calcium, albumin, hemoglobin, ALP, vasopressor, Elixhauser score, and respiratory failure",
+      "source_quote": "The result indicated that LDH was associated with the risk of one-year mortality among sepsis patients [Model 1: odds ratio (OR) = 1.28, 95% confidence interval (CI): 1.09–1.49, P = 0.002], with an adjusted OR of 1.28 (Model 2, 95% CI: 1.18–1.52, P = 0.005).",
+      "page": 4,
+      "confidence": 0.97
+    },
+    {
+      "predictor_variable": "LDH-model (LDH + clinical features)",
+      "outcome_definition": "One-year mortality among patients with sepsis",
+      "timing": "Within 24 hours of ICU admission",
+      "statistical_method": "ROC analysis",
+      "effect_size": null,
+      "auc": "Training set: 0.773 (95% CI: 0.748–0.798); Testing set: 0.750 (95% CI: 0.711–0.789)",
+      "sensitivity": "Training set: 0.761 (95% CI: 0.732–0.791); Testing set: 0.751 (95% CI: 0.704–0.798)",
+      "specificity": "Training set: 0.662 (95% CI: 0.624–0.700); Testing set: 0.619 (95% CI: 0.561–0.676)",
+      "cutoff_value": null,
+      "confounders_adjusted": "LDH, age, gender, ethnicity, potassium, calcium, albumin, hemoglobin, ALP, vasopressor, Elixhauser score, and respiratory failure",
+      "source_quote": "the AUC of LDH-model was 0.773 (95%CI: 0.748–0.798) with the sensitivity of 0.761 (95%CI: 0.732–0.791), the specificity of 0.662 (95%CI: 0.624–0.700), and the accuracy of 0.718 (95%CI: 0.695–0.742) in the training set, and the AUC was 0.750 (95%CI: 0.711–0.789) with the sensitivity of 0.751 (95%CI: 0.704–0.798), the specificity of 0.619 (95%CI: 0.561–0.676), and the accuracy of 0.691 (95%CI: 0.654–0.728) in the testing set",
+      "page": 4,
+      "confidence": 0.97
+    },
+    {
+      "predictor_variable": "Age",
+      "outcome_definition": "One-year mortality among patients with sepsis",
+      "timing": "Within 24 hours of ICU admission",
+      "statistical_method": "Univariate logistic regression",
+      "effect_size": null,
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "the result showed that age, gender, ethnicity, potassium, calcium, albumin, hemoglobin, ALP, vasopressor, Elixhauser score and respiratory failure were associated with one-year mortality of sepsis patients, which were possible predictors",
+      "page": 4,
+      "confidence": 0.85
+    },
+    {
+      "predictor_variable": "Vasopressor use",
+      "outcome_definition": "One-year mortality among patients with sepsis",
+      "timing": "Within 24 hours of ICU admission",
+      "statistical_method": "Univariate logistic regression",
+      "effect_size": null,
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "the result showed that age, gender, ethnicity, potassium, calcium, albumin, hemoglobin, ALP, vasopressor, Elixhauser score and respiratory failure were associated with one-year mortality of sepsis patients, which were possible predictors",
+      "page": 4,
+      "confidence": 0.85
+    },
+    {
+      "predictor_variable": "Respiratory failure",
+      "outcome_definition": "One-year mortality among patients with sepsis",
+      "timing": "Within 24 hours of ICU admission",
+      "statistical_method": "Univariate logistic regression",
+      "effect_size": null,
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "the result showed that age, gender, ethnicity, potassium, calcium, albumin, hemoglobin, ALP, vasopressor, Elixhauser score and respiratory failure were associated with one-year mortality of sepsis patients, which were possible predictors",
+      "page": 4,
+      "confidence": 0.85
+    }
+  ],
+  "_meta": {
+    "source_file": "Wang_2023.pdf",
+    "paper_id": "Wang_2023",
+    "sections_used": [
+      "Methods",
+      "Results"
+    ],
+    "model": "anthropic/claude-sonnet-4-6",
+    "provider": "openrouter"
+  }
+}

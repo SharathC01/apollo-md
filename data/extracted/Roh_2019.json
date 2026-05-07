@@ -1,0 +1,138 @@
+{
+  "title": "Roh_2019",
+  "year": 2019,
+  "study_design": "Retrospective observational study",
+  "country": "Korea",
+  "sample_size": {
+    "value": 446,
+    "unit": "patients",
+    "source_quote": "446 (38.9%) were diagnosed with sepsis and/or septic shock",
+    "page": 2,
+    "confidence": 0.99
+  },
+  "patient_age_mean": {
+    "value": 71,
+    "unit": "years",
+    "source_quote": "Age, y 71 (18–95)",
+    "page": 3,
+    "confidence": 0.85
+  },
+  "sofa_score_baseline": {
+    "value": 8,
+    "unit": "points",
+    "source_quote": "SOFA score 8 (2–19)",
+    "page": 3,
+    "confidence": 0.95
+  },
+  "sofa_score_peak": null,
+  "antibiotic_timing_hours": null,
+  "icu_mortality_percent": {
+    "value": 21.5,
+    "unit": "%",
+    "source_quote": "ICU mortality 96 (21.5)",
+    "page": 3,
+    "confidence": 0.99
+  },
+  "mortality_predictors": [
+    {
+      "predictor_variable": "Age ≥65 years",
+      "outcome_definition": "180-day mortality",
+      "timing": "ICU admission",
+      "statistical_method": "Stepwise logistic regression",
+      "effect_size": "+1 point (simplified β-coefficient)",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": "≥65 years",
+      "confounders_adjusted": "Age ≥65 years, BMI <18.5 kg/m2, hemato-oncologic diseases, ventilator care during ICU stay",
+      "source_quote": "4 factors (age ≥65 years, BMI 18.5kg/m2, hemato-oncologic diseases as comorbidities, and ventilator care during ICU stay) were signiﬁcant prognostic indicators on 180- and 365-day mortality",
+      "page": 3,
+      "confidence": 0.92
+    },
+    {
+      "predictor_variable": "BMI <18.5 kg/m2",
+      "outcome_definition": "180-day mortality",
+      "timing": "ICU admission",
+      "statistical_method": "Stepwise logistic regression",
+      "effect_size": "+1 point (simplified β-coefficient)",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": "<18.5 kg/m2",
+      "confounders_adjusted": "Age ≥65 years, BMI <18.5 kg/m2, hemato-oncologic diseases, ventilator care during ICU stay",
+      "source_quote": "4 factors (age ≥65 years, BMI 18.5kg/m2, hemato-oncologic diseases as comorbidities, and ventilator care during ICU stay) were signiﬁcant prognostic indicators on 180- and 365-day mortality",
+      "page": 3,
+      "confidence": 0.92
+    },
+    {
+      "predictor_variable": "Hemato-oncologic diseases as comorbidities",
+      "outcome_definition": "180-day mortality",
+      "timing": "ICU admission",
+      "statistical_method": "Stepwise logistic regression",
+      "effect_size": "+1 point (simplified β-coefficient)",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": "Age ≥65 years, BMI <18.5 kg/m2, hemato-oncologic diseases, ventilator care during ICU stay",
+      "source_quote": "4 factors (age ≥65 years, BMI 18.5kg/m2, hemato-oncologic diseases as comorbidities, and ventilator care during ICU stay) were signiﬁcant prognostic indicators on 180- and 365-day mortality",
+      "page": 3,
+      "confidence": 0.92
+    },
+    {
+      "predictor_variable": "Ventilator care during ICU stay",
+      "outcome_definition": "180-day mortality",
+      "timing": "ICU admission",
+      "statistical_method": "Stepwise logistic regression",
+      "effect_size": "+1 point (simplified β-coefficient)",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": "Age ≥65 years, BMI <18.5 kg/m2, hemato-oncologic diseases, ventilator care during ICU stay",
+      "source_quote": "4 factors (age ≥65 years, BMI 18.5kg/m2, hemato-oncologic diseases as comorbidities, and ventilator care during ICU stay) were signiﬁcant prognostic indicators on 180- and 365-day mortality",
+      "page": 3,
+      "confidence": 0.92
+    },
+    {
+      "predictor_variable": "Prognostic model (4-factor score)",
+      "outcome_definition": "180-day mortality",
+      "timing": "ICU admission",
+      "statistical_method": "Logistic regression with AUC analysis",
+      "effect_size": null,
+      "auc": "0.713 (95% CI, 0.668–0.756; P<.001)",
+      "sensitivity": "73%",
+      "specificity": "63%",
+      "cutoff_value": "≥1",
+      "confounders_adjusted": "Age ≥65 years, BMI <18.5 kg/m2, hemato-oncologic diseases, ventilator care during ICU stay",
+      "source_quote": "The AUCs of the 180-day and 365-day models were 0.713 (95% CI, 0.668–0.756; P<.001) and 0.697 (95% CI, 0.650–0.740; P<.001), respectively. The cut-off score for each of these models for predicting mortality based on the maximum Youden index was ≥1, with the 180-day model having a sensitivity of 73% and a speciﬁcity of 63%",
+      "page": 3,
+      "confidence": 0.97
+    },
+    {
+      "predictor_variable": "Prognostic model (4-factor score)",
+      "outcome_definition": "365-day mortality",
+      "timing": "ICU admission",
+      "statistical_method": "Logistic regression with AUC analysis",
+      "effect_size": null,
+      "auc": "0.697 (95% CI, 0.650–0.740; P<.001)",
+      "sensitivity": "75%",
+      "specificity": "59%",
+      "cutoff_value": "≥1",
+      "confounders_adjusted": "Age ≥65 years, BMI <18.5 kg/m2, hemato-oncologic diseases, ventilator care during ICU stay",
+      "source_quote": "The AUCs of the 180-day and 365-day models were 0.713 (95% CI, 0.668–0.756; P<.001) and 0.697 (95% CI, 0.650–0.740; P<.001), respectively. The cut-off score for each of these models for predicting mortality based on the maximum Youden index was ≥1, with the 180-day model having a sensitivity of 73% and a speciﬁcity of 63% and the 365-day model having a sensitivity of 75% and a speciﬁcity of 59%",
+      "page": 3,
+      "confidence": 0.97
+    }
+  ],
+  "_meta": {
+    "source_file": "Roh_2019.pdf",
+    "paper_id": "Roh_2019",
+    "sections_used": [
+      "Materials And Methods",
+      "Results"
+    ],
+    "model": "anthropic/claude-sonnet-4-6",
+    "provider": "openrouter"
+  }
+}

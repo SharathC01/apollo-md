@@ -1,0 +1,9 @@
+pymupdf
+pdfplumber
+anthropic
+openai
+pydantic
+streamlit
+pandas
+python-dotenv
+pytest

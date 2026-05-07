@@ -1,0 +1,173 @@
+{
+  "title": "Park_2022",
+  "year": 2022,
+  "study_design": "Multicenter retrospective cohort study",
+  "country": null,
+  "sample_size": {
+    "value": 219,
+    "unit": "patients",
+    "source_quote": "219 (10.3%) were admitted to the ICU owing to sepsis caused by IAI according to collected data review.",
+    "page": 4,
+    "confidence": 0.95
+  },
+  "patient_age_mean": {
+    "value": 69.4,
+    "unit": "years",
+    "source_quote": "The mean age of the patients was 69.4 ± 13.1 years",
+    "page": 5,
+    "confidence": 0.99
+  },
+  "sofa_score_baseline": {
+    "value": 9.5,
+    "unit": "points",
+    "source_quote": "Initial SOFA score, mean (± SD) 9.5 ± 4.0",
+    "page": 5,
+    "confidence": 0.95
+  },
+  "sofa_score_peak": null,
+  "antibiotic_timing_hours": {
+    "value": 3.078,
+    "unit": "hours",
+    "source_quote": "Time zero to time of antibiotics administration (min) 184.7 ± 303.0",
+    "page": 5,
+    "confidence": 0.8
+  },
+  "icu_mortality_percent": {
+    "value": 28.8,
+    "unit": "%",
+    "source_quote": "the mortality rate was 28.8% (n = 63/219) for sepsis due to IAI in the ICU.",
+    "page": 4,
+    "confidence": 0.95
+  },
+  "mortality_predictors": [
+    {
+      "predictor_variable": "Coagulation dysfunction",
+      "outcome_definition": "28-day mortality",
+      "timing": null,
+      "statistical_method": "Multivariate logistic regression",
+      "effect_size": "OR = 2.78 (95% CI 1.47–5.23)",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": "age, sex, CCI, lactic acid level",
+      "source_quote": "after adjusting for age, sex, CCI, and lactic acid level, only coagulation dysfunction appeared to affect 28-day mortality significantly (OR = 2.78 [1.47–5.23], p = 0.001)",
+      "page": 7,
+      "confidence": 0.97
+    },
+    {
+      "predictor_variable": "SAPS 3 score",
+      "outcome_definition": "28-day mortality",
+      "timing": null,
+      "statistical_method": "Multivariate logistic regression",
+      "effect_size": null,
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": "CCI, septic shock, initial lactate level, initial SOFA score, CRRT, source control, number of dysfunctional organs",
+      "source_quote": "In the multivariate logistic regression analysis, after adjusting for each risk and confounding factor, only the SAPS 3 score (p < 0.001) and CRRT (p < 0.001) were independently associated with higher 28-day mortality",
+      "page": 7,
+      "confidence": 0.92
+    },
+    {
+      "predictor_variable": "CRRT (continuous renal replacement therapy)",
+      "outcome_definition": "28-day mortality",
+      "timing": null,
+      "statistical_method": "Multivariate logistic regression",
+      "effect_size": null,
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": "CCI, septic shock, initial lactate level, initial SOFA score, SAPS 3 score, source control, number of dysfunctional organs",
+      "source_quote": "In the multivariate logistic regression analysis, after adjusting for each risk and confounding factor, only the SAPS 3 score (p < 0.001) and CRRT (p < 0.001) were independently associated with higher 28-day mortality",
+      "page": 7,
+      "confidence": 0.92
+    },
+    {
+      "predictor_variable": "Three or more organ dysfunctions",
+      "outcome_definition": "28-day mortality",
+      "timing": null,
+      "statistical_method": "Logistic regression",
+      "effect_size": "OR = 9.06 (95% CI 2.64–31.15) for three organ dysfunctions; OR = 7.25 (95% CI 1.85–28.36) for four or more organ dysfunctions",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": "≥3 organ dysfunctions",
+      "confounders_adjusted": null,
+      "source_quote": "The 28-day mortality was 55.6% in patients with three organ dysfunctions (OR = 9.06 [2.64–31.15], p = 0.001) and 50% in patients with four or more organ dysfunctions (OR = 7.25 (1.85–28.36], p = 0.004).",
+      "page": 7,
+      "confidence": 0.95
+    },
+    {
+      "predictor_variable": "Coagulation dysfunction (crude)",
+      "outcome_definition": "28-day mortality",
+      "timing": null,
+      "statistical_method": "Univariate logistic regression",
+      "effect_size": "OR = 2.99 (95% CI 1.63–5.48)",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "the 28-day mortality rate was more significantly affected with coagulation (OR = 2.99 [1.63–5.48], p < 0.001)",
+      "page": 7,
+      "confidence": 0.95
+    },
+    {
+      "predictor_variable": "CNS dysfunction (crude)",
+      "outcome_definition": "28-day mortality",
+      "timing": null,
+      "statistical_method": "Univariate logistic regression",
+      "effect_size": "OR = 2.38 (95% CI 1.19–4.75)",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "CNS (OR = 2.38 [1.19–4.75], p = 0.014)",
+      "page": 7,
+      "confidence": 0.95
+    },
+    {
+      "predictor_variable": "Renal dysfunction (crude)",
+      "outcome_definition": "28-day mortality",
+      "timing": null,
+      "statistical_method": "Univariate logistic regression",
+      "effect_size": "OR = 1.99 (95% CI 1.09–3.61)",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "renal (OR = 1.99 [1.09–3.61], p = 0.024)",
+      "page": 7,
+      "confidence": 0.95
+    },
+    {
+      "predictor_variable": "Respiratory dysfunction (crude)",
+      "outcome_definition": "28-day mortality",
+      "timing": null,
+      "statistical_method": "Univariate logistic regression",
+      "effect_size": "OR = 1.93 (95% CI 1.06–3.5)",
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "respiratory (OR = 1.93 [1.06–3.5], p = 0.031) dysfunctions",
+      "page": 7,
+      "confidence": 0.95
+    }
+  ],
+  "_meta": {
+    "source_file": "Park_2022.pdf",
+    "paper_id": "Park_2022",
+    "sections_used": [
+      "Results"
+    ],
+    "model": "anthropic/claude-sonnet-4-6",
+    "provider": "openrouter"
+  }
+}

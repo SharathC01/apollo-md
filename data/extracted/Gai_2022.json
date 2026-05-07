@@ -1,0 +1,140 @@
+{
+  "title": "Risk factors for septic patients",
+  "year": 2022,
+  "study_design": "case-control study",
+  "country": "China",
+  "sample_size": {
+    "value": 72,
+    "unit": "patients",
+    "source_quote": "A total of 72 patients with sepsis in ICU were included for analysis.",
+    "page": 1,
+    "confidence": 0.99
+  },
+  "patient_age_mean": {
+    "value": 71.26,
+    "unit": "years",
+    "source_quote": "The mean ages of the survivors and non-survivors were 71.07 ± 7.52 and 71.45 ± 6.89 years, respectively (P = 0.822).",
+    "page": 3,
+    "confidence": 0.6
+  },
+  "sofa_score_baseline": {
+    "value": 10.62,
+    "unit": "points",
+    "source_quote": "SOFA score, 10.62 ± 1.67 vs. 7.83 ± 2.29, respectively; P < 0.001 for both",
+    "page": 3,
+    "confidence": 0.65
+  },
+  "sofa_score_peak": null,
+  "antibiotic_timing_hours": null,
+  "icu_mortality_percent": {
+    "value": 58.3,
+    "unit": "%",
+    "source_quote": "Among 72 patients with sepsis, there were 42 (58.3%) non-survivors and 30 (41.7%) survivors.",
+    "page": 3,
+    "confidence": 0.95
+  },
+  "mortality_predictors": [
+    {
+      "predictor_variable": "Peak Systolic Velocity (PSV) of superior mesenteric artery",
+      "outcome_definition": "mortality in sepsis (non-survivor vs. survivor)",
+      "timing": "within first 24 hours of ICU admission",
+      "statistical_method": "multivariate logistic regression",
+      "effect_size": "OR = 0.295 (95% CI: 0.094–0.925)",
+      "auc": "0.99",
+      "sensitivity": "0.99",
+      "specificity": "0.96",
+      "cutoff_value": null,
+      "confounders_adjusted": "APACHE II score, SOFA score, lactate, EDV, RI",
+      "source_quote": "multivariate analysis suggested that low PSV was an independent risk factor for mortality, and the adjusted odds ratio was 0.295 (95% CI: 0.094–0.925). The ROC analysis showed that the PSV (AUC = 0.99; sensitivity and specificity were 0.99 and 0.96, respectively) had good predictive value for mortality in sepsis.",
+      "page": 1,
+      "confidence": 0.97
+    },
+    {
+      "predictor_variable": "APACHE II score",
+      "outcome_definition": "mortality in sepsis (non-survivor vs. survivor)",
+      "timing": "within first 24 hours of ICU admission",
+      "statistical_method": "univariate analysis",
+      "effect_size": null,
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "Univariate analysis revealed that the APACHE II score, SOFA score, lactate, low PSV, EDV, and RI were potential risk factors for mortality in sepsis",
+      "page": 1,
+      "confidence": 0.9
+    },
+    {
+      "predictor_variable": "SOFA score",
+      "outcome_definition": "mortality in sepsis (non-survivor vs. survivor)",
+      "timing": "within first 24 hours of ICU admission",
+      "statistical_method": "univariate analysis",
+      "effect_size": null,
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "Univariate analysis revealed that the APACHE II score, SOFA score, lactate, low PSV, EDV, and RI were potential risk factors for mortality in sepsis",
+      "page": 1,
+      "confidence": 0.9
+    },
+    {
+      "predictor_variable": "Lactate level",
+      "outcome_definition": "mortality in sepsis (non-survivor vs. survivor)",
+      "timing": "within first 24 hours of ICU admission",
+      "statistical_method": "univariate analysis",
+      "effect_size": null,
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "Univariate analysis revealed that the APACHE II score, SOFA score, lactate, low PSV, EDV, and RI were potential risk factors for mortality in sepsis",
+      "page": 1,
+      "confidence": 0.9
+    },
+    {
+      "predictor_variable": "End-diastolic velocity (EDV) of superior mesenteric artery",
+      "outcome_definition": "mortality in sepsis (non-survivor vs. survivor)",
+      "timing": "within first 24 hours of ICU admission",
+      "statistical_method": "univariate analysis",
+      "effect_size": null,
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "Univariate analysis revealed that the APACHE II score, SOFA score, lactate, low PSV, EDV, and RI were potential risk factors for mortality in sepsis",
+      "page": 1,
+      "confidence": 0.9
+    },
+    {
+      "predictor_variable": "Resistive index (RI) of superior mesenteric artery",
+      "outcome_definition": "mortality in sepsis (non-survivor vs. survivor)",
+      "timing": "within first 24 hours of ICU admission",
+      "statistical_method": "univariate analysis",
+      "effect_size": null,
+      "auc": null,
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "Univariate analysis revealed that the APACHE II score, SOFA score, lactate, low PSV, EDV, and RI were potential risk factors for mortality in sepsis",
+      "page": 1,
+      "confidence": 0.9
+    }
+  ],
+  "_meta": {
+    "source_file": "Gai_2022.pdf",
+    "paper_id": "Gai_2022",
+    "sections_used": [
+      "Methods",
+      "Results",
+      "Methods",
+      "Results"
+    ],
+    "model": "anthropic/claude-sonnet-4-6",
+    "provider": "openrouter"
+  }
+}
