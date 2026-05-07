@@ -21,7 +21,8 @@ import pandas as pd
 
 from src.validate_enhanced import validate_all
 from src.table_builder import build_evidence_table, build_ranked_predictors, filter_by_query
-from src.ingest_enhanced import load_all_papers_enhanced
+from src.query_parser import parse_query
+from src.summarizer import summarize_evidence, summarize_phenotype
 import src.retrieve as _retrieve
 
 # Cache validated records for the lifetime of the process
@@ -40,50 +41,65 @@ def run_pipeline(
     query: str,
     use_case: str = "mortality",
     top_k: int = 5,
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, str]:
     """
-    Execute the full query pipeline and return a structured evidence DataFrame.
+    Execute the full query pipeline.
+
+    Returns (df, summary) where:
+      df      — structured evidence DataFrame
+      summary — 2-3 sentence LLM summary (empty string for RAG fallback path)
 
     use_case options:
       "mortality"  -> build_evidence_table() on filtered records
       "biomarker"  -> build_ranked_predictors() (AUC-ranked) on filtered records
       "phenotype"  -> build_evidence_table() on filtered records
 
-    Falls back to RAG (semantic search over raw PDF chunks) when fewer than
-    3 keyword matches are found. RAG fallback returns a DataFrame with columns:
-    source_file, page, score, text_preview.
+    Falls back to semantic search over structured evidence records when fewer
+    than 3 keyword matches are found. Both paths return the same evidence table
+    schema; result_type column distinguishes "structured" vs "semantic".
     """
-    # Step 1: load validated records
+    # Step 1: parse query intent
+    parsed = parse_query(query)
+    print(
+        f"Query parsed: predictor={parsed.get('predictor')} "
+        f"outcome={parsed.get('outcome')} "
+        f"keywords={parsed.get('keywords')}"
+    )
+    keyword_query = " ".join(parsed.get("keywords") or query.split())
+
+    # Step 2: load validated records
     records = _load_records()
 
-    # Step 2: keyword filter
-    filtered = filter_by_query(records, query)
+    # Step 3: keyword filter using parsed keywords
+    filtered = filter_by_query(records, keyword_query)
 
-    # Step 3: enough keyword matches — use structured path
+    # Step 4: enough keyword matches — use structured path
     if len(filtered) >= 3:
         if use_case == "biomarker":
-            return build_ranked_predictors(filtered)
+            df = build_ranked_predictors(filtered)
         else:
-            return build_evidence_table(filtered)
+            df = build_evidence_table(filtered)
+        df["result_type"] = "structured"
+        if use_case == "phenotype":
+            summary = summarize_phenotype(df, parsed)
+        else:
+            summary = summarize_evidence(df, parsed)
+        return df, summary
 
-    # Step 4: RAG fallback
+    # Step 5: RAG fallback — semantic search over structured evidence records
     print(
         f"Only {len(filtered)} keyword match(es) for '{query}' — "
-        f"falling back to semantic search over raw PDF chunks..."
+        f"falling back to semantic search over evidence records..."
     )
-    chunks = load_all_papers_enhanced()
-    _, embeddings = _retrieve.embed_chunks(chunks)
-    top_chunks = _retrieve.retrieve(query, chunks, embeddings, top_k=top_k)
-
-    return pd.DataFrame([
-        {
-            "source_file": c.get("source_file"),
-            "page": c.get("page"),
-            "score": round(c.get("score", 0.0), 4),
-            "text_preview": str(c.get("text") or "")[:200],
-        }
-        for c in top_chunks
-    ])
+    records, embeddings = _retrieve.build_evidence_index()
+    top_records = _retrieve.retrieve(query, records, embeddings, top_k=top_k)
+    df = build_evidence_table(top_records)
+    df["result_type"] = "semantic"
+    if use_case == "phenotype":
+        summary = summarize_phenotype(df, parsed)
+    else:
+        summary = ""
+    return df, summary
 
 
 def get_source_quote(study_id: str, predictor: str) -> str:
@@ -113,11 +129,11 @@ if __name__ == "__main__":
     use_case = sys.argv[2] if len(sys.argv) > 2 else "mortality"
 
     print(f"\nRunning pipeline: query='{query}' use_case='{use_case}'\n")
-    df = run_pipeline(query, use_case=use_case)
+    df, summary = run_pipeline(query, use_case=use_case)
 
-    if "Study" in df.columns:
-        print(df[["Study", "Predictor", "AUC", "Verified", "Confidence"]].head(10).to_string())
-    else:
-        print(df.head(10).to_string())
+    if summary:
+        print(f"Summary:\n{summary}\n")
+
+    print(df[["Study", "Predictor", "AUC", "Verified", "Confidence", "result_type"]].head(10).to_string())
 
     print(f"\nPipeline working: {len(df)} records found")

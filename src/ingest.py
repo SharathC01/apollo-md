@@ -57,11 +57,39 @@ def _extract_pages(pdf_path: str) -> list[dict]:
     doc = fitz.open(pdf_path)
     pages = []
     for i, page in enumerate(doc):
-        text = page.get_text("text")
+        page_width = page.rect.width
+        midpoint = page_width / 2
+
+        blocks = page.get_text("blocks")
+        text_blocks = [b for b in blocks if b[6] == 0 and b[4].strip()]
+
+        if text_blocks:
+            left = [b for b in text_blocks if (b[0] + b[2]) / 2 < midpoint]
+            right = [b for b in text_blocks if (b[0] + b[2]) / 2 >= midpoint]
+            is_two_column = len(left) >= 2 and len(right) >= 2
+
+            if is_two_column:
+                left.sort(key=lambda b: b[1])
+                right.sort(key=lambda b: b[1])
+                text = "\n".join(b[4] for b in left) + "\n" + "\n".join(b[4] for b in right)
+            else:
+                text_blocks.sort(key=lambda b: b[1])
+                text = "\n".join(b[4] for b in text_blocks)
+        else:
+            text = ""
+            is_two_column = False
+
+        try:
+            has_table = bool(page.find_tables().tables)
+        except Exception:
+            has_table = False
+
         pages.append({
-            "page_num": i + 1,  # 1-indexed
+            "page_num": i + 1,
             "text": text,
             "is_scanned": len(text.strip()) == 0,
+            "two_column": is_two_column,
+            "has_table": has_table,
         })
     doc.close()
     return pages
@@ -78,8 +106,10 @@ def _detect_sections(pages: list[dict], source_file: str) -> list[dict]:
     current_lines: list[str] = []
     current_page_start = 1
     current_has_scanned = False
+    current_two_column = False
+    current_has_table = False
 
-    def _flush(section, lines, page_start, page_end, has_scanned):
+    def _flush(section, lines, page_start, page_end, has_scanned, two_column, has_table):
         text = "\n".join(lines).strip()
         if text or has_scanned:
             chunks.append({
@@ -89,6 +119,8 @@ def _detect_sections(pages: list[dict], source_file: str) -> list[dict]:
                 "page_end": page_end,
                 "source_file": source_file,
                 "has_scanned_pages": has_scanned,
+                "two_column": two_column,
+                "has_table": has_table,
             })
 
     for page in pages:
@@ -96,6 +128,9 @@ def _detect_sections(pages: list[dict], source_file: str) -> list[dict]:
         if page["is_scanned"]:
             current_has_scanned = True
             continue
+
+        current_two_column = current_two_column or page.get("two_column", False)
+        current_has_table = current_has_table or page.get("has_table", False)
 
         for line in page["text"].splitlines():
             m = _HEADER_RE.match(line)
@@ -107,12 +142,16 @@ def _detect_sections(pages: list[dict], source_file: str) -> list[dict]:
                     current_page_start,
                     page_num,
                     current_has_scanned,
+                    current_two_column,
+                    current_has_table,
                 )
                 # Start new section
                 current_section = m.group(1).strip().title()
                 current_lines = []
                 current_page_start = page_num
                 current_has_scanned = page["is_scanned"]
+                current_two_column = page.get("two_column", False)
+                current_has_table = page.get("has_table", False)
             else:
                 current_lines.append(line)
 
@@ -123,6 +162,8 @@ def _detect_sections(pages: list[dict], source_file: str) -> list[dict]:
         current_page_start,
         pages[-1]["page_num"] if pages else 1,
         current_has_scanned,
+        current_two_column,
+        current_has_table,
     )
 
     return chunks

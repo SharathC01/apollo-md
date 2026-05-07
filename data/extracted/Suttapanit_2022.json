@@ -1,21 +1,21 @@
 {
-  "title": "Accuracy of Sepsis Screening Score for Mortality Prediction at ED Triage",
+  "title": "The Accuracy of Sepsis Screening Score for Mortality Prediction at Emergency Department Triage",
   "year": 2022,
   "study_design": "retrospective cross-sectional study",
-  "country": null,
+  "country": "Thailand",
   "sample_size": {
     "value": 550,
     "unit": "patients",
     "source_quote": "In total, 550 patients were included in the analysis.",
     "page": 4,
-    "confidence": 0.99
+    "confidence": 1.0
   },
   "patient_age_mean": {
     "value": 69,
     "unit": "years",
     "source_quote": "The mean age was 69 years, and 46.7% of patients were male.",
     "page": 4,
-    "confidence": 0.99
+    "confidence": 1.0
   },
   "sofa_score_baseline": null,
   "sofa_score_peak": null,
@@ -23,25 +23,40 @@
   "icu_mortality_percent": null,
   "mortality_predictors": [
     {
-      "predictor_variable": "NEWS (National Early Warning Score)",
+      "predictor_variable": "National Early Warning Score (NEWS)",
       "outcome_definition": "28-day mortality",
       "timing": "ED triage",
-      "statistical_method": "AUROC (receiver operating characteristic curve)",
+      "statistical_method": "Area under the receiver operating characteristic curve (AUROC)",
       "effect_size": null,
       "auc": "0.770 (95% CI: 0.705-0.835)",
-      "sensitivity": null,
-      "specificity": null,
-      "cutoff_value": null,
+      "sensitivity": "91.30% at cutoff ≥4; 86.96% at cutoff ≥5",
+      "specificity": "28.69% at cutoff ≥4; 45.74% at cutoff ≥5",
+      "cutoff_value": ">4 or >5",
       "confounders_adjusted": null,
       "source_quote": "The primary outcome, 28-day mortality, was best detected by NEWS (area under the receiver operating characteristic curve [AUROC] = 0.770; 95% CI: 0.705-0.835)",
       "page": 4,
-      "confidence": 0.99
+      "confidence": 1.0
     },
     {
-      "predictor_variable": "SOS (Search Out Severity)",
+      "predictor_variable": "quick Sequential Organ Failure Assessment (qSOFA)",
       "outcome_definition": "28-day mortality",
       "timing": "ED triage",
-      "statistical_method": "AUROC (receiver operating characteristic curve)",
+      "statistical_method": "Area under the receiver operating characteristic curve (AUROC)",
+      "effect_size": null,
+      "auc": "0.7473 (95% CI: 0.688-0.806)",
+      "sensitivity": "94.20% at cutoff ≥1; 69.57% at cutoff ≥2; 17.39% at cutoff 3",
+      "specificity": "24.53% at cutoff ≥1; 74.84% at cutoff ≥2; 96.47% at cutoff 3",
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "followed by SOS (AUROC = 0.749; 95% CI: 0.685-0.815, qSOFA (AUROC = 0.7473; 95% CI: 0.688-0.806])",
+      "page": 4,
+      "confidence": 1.0
+    },
+    {
+      "predictor_variable": "Search Out Severity (SOS) score",
+      "outcome_definition": "28-day mortality",
+      "timing": "ED triage",
+      "statistical_method": "Area under the receiver operating characteristic curve (AUROC)",
       "effect_size": null,
       "auc": "0.749 (95% CI: 0.685-0.815)",
       "sensitivity": null,
@@ -50,28 +65,13 @@
       "confounders_adjusted": null,
       "source_quote": "followed by SOS (AUROC = 0.749; 95% CI: 0.685-0.815",
       "page": 4,
-      "confidence": 0.99
+      "confidence": 1.0
     },
     {
-      "predictor_variable": "qSOFA (quick Sequential Organ Failure Assessment)",
+      "predictor_variable": "Emergency Severity Index (ESI) triage",
       "outcome_definition": "28-day mortality",
       "timing": "ED triage",
-      "statistical_method": "AUROC (receiver operating characteristic curve)",
-      "effect_size": null,
-      "auc": "0.7473 (95% CI: 0.688-0.806)",
-      "sensitivity": null,
-      "specificity": null,
-      "cutoff_value": null,
-      "confounders_adjusted": null,
-      "source_quote": "qSOFA (AUROC = 0.7473; 95% CI: 0.688-0.806])",
-      "page": 4,
-      "confidence": 0.99
-    },
-    {
-      "predictor_variable": "ESI triage (Emergency Severity Index)",
-      "outcome_definition": "28-day mortality",
-      "timing": "ED triage",
-      "statistical_method": "AUROC (receiver operating characteristic curve)",
+      "statistical_method": "Area under the receiver operating characteristic curve (AUROC)",
       "effect_size": null,
       "auc": "0.599 (95% CI: 0.542-0.656)",
       "sensitivity": null,
@@ -80,30 +80,67 @@
       "confounders_adjusted": null,
       "source_quote": "ESI triage (AUROC = 0.599 ;95% CI: 0.542-0.656)",
       "page": 4,
-      "confidence": 0.99
+      "confidence": 1.0
     },
     {
-      "predictor_variable": "SIRS (Systemic Inflammatory Response Syndrome)",
+      "predictor_variable": "Systemic Inflammatory Response Syndrome (SIRS) criteria",
       "outcome_definition": "28-day mortality",
       "timing": "ED triage",
-      "statistical_method": "AUROC (receiver operating characteristic curve)",
+      "statistical_method": "Area under the receiver operating characteristic curve (AUROC)",
       "effect_size": null,
       "auc": "0.588 (95% CI: 0.522-0.654)",
-      "sensitivity": null,
-      "specificity": null,
+      "sensitivity": "95.65% at cutoff ≥1; 85.51% at cutoff ≥2; 49.28% at cutoff 3",
+      "specificity": "5.61% at cutoff ≥1; 25.78% at cutoff ≥2; 65.07% at cutoff 3",
       "cutoff_value": null,
       "confounders_adjusted": null,
       "source_quote": "and SIRS (AUROC = 0.588; 95% CI: 0.522-0.654]",
       "page": 4,
-      "confidence": 0.99
+      "confidence": 1.0
+    },
+    {
+      "predictor_variable": "National Early Warning Score (NEWS)",
+      "outcome_definition": "28-day mechanical ventilator usage",
+      "timing": "ED triage",
+      "statistical_method": "Area under the receiver operating characteristic curve (AUROC)",
+      "effect_size": null,
+      "auc": "0.750 (95% CI: 0.700-0.800)",
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "NEWS 0.770 (0.705, 0.835) 0.750 (0.700, 0.800) 0.763 (0.706, 0.819)",
+      "page": 7,
+      "confidence": 0.9
+    },
+    {
+      "predictor_variable": "National Early Warning Score (NEWS)",
+      "outcome_definition": "28-day vasopressor usage",
+      "timing": "ED triage",
+      "statistical_method": "Area under the receiver operating characteristic curve (AUROC)",
+      "effect_size": null,
+      "auc": "0.763 (95% CI: 0.706-0.819)",
+      "sensitivity": null,
+      "specificity": null,
+      "cutoff_value": null,
+      "confounders_adjusted": null,
+      "source_quote": "NEWS 0.770 (0.705, 0.835) 0.750 (0.700, 0.800) 0.763 (0.706, 0.819)",
+      "page": 7,
+      "confidence": 0.9
     }
   ],
   "_meta": {
     "source_file": "Suttapanit_2022.pdf",
     "paper_id": "Suttapanit_2022",
     "sections_used": [
-      "Methods",
-      "Results"
+      "page 1",
+      "page 2",
+      "page 3",
+      "page 4",
+      "page 5",
+      "page 6",
+      "page 7",
+      "page 8",
+      "page 9"
     ],
     "model": "anthropic/claude-sonnet-4-6",
     "provider": "openrouter"

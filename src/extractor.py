@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import config
-from src.ingest import ingest_pdf
+from src.ingest_enhanced import parse_pdf_enhanced
 
 # ── Section filter ────────────────────────────────────────────────────────────
 
@@ -31,7 +31,7 @@ _KEEP_SECTIONS = {
 
 
 def _filter_chunks(chunks: list[dict]) -> list[dict]:
-    return [c for c in chunks if c["section"].lower() in _KEEP_SECTIONS]
+    return [c for c in chunks if "section" not in c or (c["section"] or "").lower() in _KEEP_SECTIONS]
 
 
 # ── Prompt ────────────────────────────────────────────────────────────────────
@@ -80,7 +80,7 @@ def _build_user_message(chunks: list[dict], source_file: str) -> str:
     parts = [f"Extract data from the following sections of '{source_file}'.\n\nSchema:\n{_SCHEMA_DESCRIPTION}\n\n---"]
     for chunk in chunks:
         parts.append(
-            f"[Section: {chunk['section']} | Pages {chunk['page_start']}–{chunk['page_end']}]\n{chunk['text']}"
+            f"[Section: {chunk.get('section', 'page')} | Pages {chunk.get('page_start', chunk.get('page', '?'))}–{chunk.get('page_end', chunk.get('page', '?'))}]\n{chunk['text']}"
         )
     return "\n\n".join(parts)
 
@@ -163,10 +163,8 @@ def extract(chunks: list[dict], paper_id: str) -> dict:
     filtered = _filter_chunks(chunks)
 
     if not filtered:
-        raise ValueError(
-            f"No Methods or Results sections found in '{source_file}'. "
-            f"Available sections: {[c['section'] for c in chunks]}"
-        )
+        section_labels = [c.get('section', f'page {c.get("page", "?")}') for c in chunks]
+        raise ValueError(f"No Methods or Results sections found in '{paper_id}'. Available sections: {section_labels}")
 
     user_message = _build_user_message(filtered, source_file)
     raw_response = _call_llm(user_message)
@@ -176,7 +174,7 @@ def extract(chunks: list[dict], paper_id: str) -> dict:
     result["_meta"] = {
         "source_file": source_file,
         "paper_id": paper_id,
-        "sections_used": [c["section"] for c in filtered],
+        "sections_used": [c.get("section", f"page {c.get('page', '?')}") for c in filtered],
         "model": config.MODEL_ID,
         "provider": "openrouter" if config.USE_OPENROUTER else "anthropic",
     }
@@ -189,7 +187,7 @@ def extract_pdf(pdf_path: str) -> tuple[dict, Path]:
     """Full pipeline: ingest PDF → extract → save. Returns (result, saved_path)."""
     path = Path(pdf_path)
     paper_id = path.stem
-    chunks = ingest_pdf(str(path))
+    chunks = parse_pdf_enhanced(str(path))
     return extract(chunks, paper_id)
 
 

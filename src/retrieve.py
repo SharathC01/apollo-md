@@ -1,12 +1,14 @@
 """
-retrieve.py — Semantic retrieval (RAG) over paper chunks.
+retrieve.py — Semantic retrieval (RAG) over paper chunks or structured records.
 
-Uses sentence-transformers "all-MiniLM-L6-v2" to embed chunk texts and
-compute cosine similarity against a query. Supports optional global caching
-so chunks and embeddings are not reloaded on every query.
+Uses sentence-transformers "all-MiniLM-L6-v2" to embed texts and compute
+cosine similarity against a query. Supports optional global caching so
+chunks and embeddings are not reloaded on every query.
 
 Functions:
   embed_chunks(chunks) -> tuple[list, np.ndarray]
+  embed_evidence_records(records) -> tuple[list, np.ndarray]
+  build_evidence_index(extracted_dir) -> tuple[list, np.ndarray]
   retrieve(query, chunks, embeddings, top_k=5) -> list[dict]
 """
 
@@ -84,6 +86,59 @@ def retrieve(
         results.append(chunk)
 
     return results
+
+
+def _v(val) -> str:
+    """Coerce None and 'not reported' to empty string for embedding text."""
+    if val is None or str(val).strip().lower() == "not reported":
+        return ""
+    return str(val)
+
+
+def embed_evidence_records(records: list[dict]) -> tuple[list, np.ndarray]:
+    """
+    Encode structured evidence records using the SentenceTransformer model.
+
+    Each record is serialised to a descriptive text string before encoding.
+    Returns (records, embeddings_array) — same signature as embed_chunks().
+    """
+    model = _get_model()
+    texts = [
+        (
+            f"Study {_v(r.get('study_id'))}. "
+            f"Country {_v(r.get('country'))}. "
+            f"N={_v(r.get('sample_size'))}. "
+            f"Predictor: {_v(r.get('predictor'))}. "
+            f"Outcome: {_v(r.get('outcome'))}. "
+            f"Timing: {_v(r.get('timing'))}. "
+            f"Method: {_v(r.get('method'))}. "
+            f"Effect size: {_v(r.get('effect_size'))}. "
+            f"AUC: {_v(r.get('auc'))}. "
+            f"Confidence: {_v(r.get('confidence'))}."
+        )
+        for r in records
+    ]
+    embeddings = model.encode(
+        texts,
+        show_progress_bar=True,
+        convert_to_numpy=True,
+        batch_size=32,
+    )
+    return records, embeddings
+
+
+def build_evidence_index(extracted_dir: str = "data/extracted") -> tuple[list, np.ndarray]:
+    """
+    Build a semantic index over all validated evidence records.
+
+    Calls validate_all() then embed_evidence_records().
+    Returns (records, embeddings).
+    """
+    from src.validate_enhanced import validate_all
+
+    records = validate_all(extracted_dir)
+    print(f"Evidence index built: {len(records)} records embedded")
+    return embed_evidence_records(records)
 
 
 def preload(chunks: list[dict]) -> None:

@@ -1,20 +1,20 @@
 {
-  "title": "Baloch_2022",
+  "title": "Comparison of Pediatric Sequential Organ Failure Assessment and Pediatric Risk of Mortality III Score as Mortality Prediction in Pediatric Intensive Care Unit",
   "year": 2022,
-  "study_design": "Cross-validation study (diagnostic accuracy study)",
+  "study_design": "Cross-validation study",
   "country": "Pakistan",
   "sample_size": {
     "value": 286,
-    "unit": "children",
-    "source_quote": "We included 286 children in the study.",
-    "page": 2,
-    "confidence": 1.0
+    "unit": "patients",
+    "source_quote": "Two hundred eighty-six critically ill children of age one month to 15 years of either gender staying in PICU for more than 24 hours were included.",
+    "page": 1,
+    "confidence": 0.99
   },
   "patient_age_mean": {
     "value": 24,
-    "unit": "months (median)",
+    "unit": "months",
     "source_quote": "The median age was 24 months (range: 1-144 months).",
-    "page": 2,
+    "page": 1,
     "confidence": 0.85
   },
   "sofa_score_baseline": {
@@ -30,92 +30,83 @@
     "value": 57,
     "unit": "%",
     "source_quote": "The 30-day mortality was estimated as 57%.",
-    "page": 2,
-    "confidence": 1.0
+    "page": 1,
+    "confidence": 0.99
   },
   "mortality_predictors": [
     {
       "predictor_variable": "p-SOFA score",
       "outcome_definition": "30-day mortality",
       "timing": "Within 24 hours of admission",
-      "statistical_method": "ROC curve analysis (AUC), Chi-square test, sensitivity/specificity analysis",
+      "statistical_method": "ROC curve analysis",
       "effect_size": null,
       "auc": "0.81 (95% CI: 0.76-0.86)",
       "sensitivity": "93.87%",
       "specificity": "38.21%",
-      "cutoff_value": "p-SOFA > 2",
+      "cutoff_value": ">2",
       "confounders_adjusted": null,
-      "source_quote": "With an area under the curve (AUC) of 0.81 (0.76-0.86) and a p-value of 0.0001, the maximal p-SOFA exhibited good discrimination for 30-day mortality. For the prediction of 30-day mortality at the cut-off value of p-SOFA>2, the sensitivity was 93.87%, specificity was 38.21%, PPV was 66.81%, NPV was 82.46% and accuracy was 69.93%.",
-      "page": 4,
-      "confidence": 0.97
+      "source_quote": "the maximum p-SOFA score (area under the curve (AUC)=0.81, 95% CI=0.76-0.86, p=0.001) ... had good discrimination for 30-day mortality. For the prediction of 30-day mortality at the cut-off value of p-SOFA>2, the sensitivity was 93.87%, specificity was 38.21%, and accuracy was 69.93%.",
+      "page": 1,
+      "confidence": 0.99
     },
     {
       "predictor_variable": "PRISM III 24 score",
       "outcome_definition": "30-day mortality",
       "timing": "Within 24 hours of admission",
-      "statistical_method": "ROC curve analysis (AUC), Chi-square test, sensitivity/specificity analysis",
+      "statistical_method": "ROC curve analysis",
       "effect_size": null,
       "auc": "0.75 (95% CI: 0.69-0.81)",
       "sensitivity": "55.83%",
       "specificity": "77.24%",
-      "cutoff_value": "PRISM III 24 score > 8",
+      "cutoff_value": ">8",
       "confounders_adjusted": null,
-      "source_quote": "The maximum PRISM III 24 had good discrimination for 30-day mortality, with the AUC of 0.75 (0.69-0.81) with a p-value=0.0001. Whereas at the cut-off value of PRISM III 24 score>8, the sensitivity was 55.83%, specificity was 77.24%, PPV was 76.47%, NPV was 56.89% and accuracy was 65.03%.",
-      "page": 4,
-      "confidence": 0.97
+      "source_quote": "PRISM III 24 score (AUC=0.75, 95% CI=0.69-0.81, p=0.001) had good discrimination for 30-day mortality. Whereas at the cut-off value of PRISM III 24 score>8, the sensitivity was 55.83%, specificity was 77.24%, and accuracy was 65.03%.",
+      "page": 1,
+      "confidence": 0.99
     },
     {
-      "predictor_variable": "Type of admission (clinical vs surgical)",
+      "predictor_variable": "p-SOFA score",
       "outcome_definition": "30-day mortality",
-      "timing": "At admission",
+      "timing": "Within 24 hours of admission",
       "statistical_method": "Chi-square test",
       "effect_size": null,
       "auc": null,
-      "sensitivity": null,
-      "specificity": null,
-      "cutoff_value": null,
+      "sensitivity": "93.87%",
+      "specificity": "38.21%",
+      "cutoff_value": ">2",
       "confounders_adjusted": null,
-      "source_quote": "Type of admission Clinical 155 (95.1) 108 (87.8) 263 (92) 0.025* Surgical 8 (4.9) 15 (12.2) 23 (8)",
-      "page": 3,
-      "confidence": 0.88
+      "source_quote": "Chi-square test=45.19 (p=0.001), Sensitivity=93.87%, Specificity=38.21%, PPV=66.81%, NPV=82.46%, Accuracy=69.93%",
+      "page": 6,
+      "confidence": 0.99
     },
     {
-      "predictor_variable": "Ventilator requirement",
+      "predictor_variable": "PRISM III 24 score",
       "outcome_definition": "30-day mortality",
-      "timing": "During PICU stay",
+      "timing": "Within 24 hours of admission",
       "statistical_method": "Chi-square test",
       "effect_size": null,
       "auc": null,
-      "sensitivity": null,
-      "specificity": null,
-      "cutoff_value": null,
+      "sensitivity": "55.83%",
+      "specificity": "77.24%",
+      "cutoff_value": ">8",
       "confounders_adjusted": null,
-      "source_quote": "Ventilator requirement Yes 163 (100) 79 (64.2) 242 (84.6) 0.001* No 0 44 (35.8) 44 (15.4)",
-      "page": 3,
-      "confidence": 0.88
-    },
-    {
-      "predictor_variable": "Inotrope need",
-      "outcome_definition": "30-day mortality",
-      "timing": "During PICU stay",
-      "statistical_method": "Chi-square test",
-      "effect_size": null,
-      "auc": null,
-      "sensitivity": null,
-      "specificity": null,
-      "cutoff_value": null,
-      "confounders_adjusted": null,
-      "source_quote": "Inotrope Need Yes 140 (85.9) 27 (22) 167 (58.4) 0.001* No 23 (14.1) 96 (78) 119 (41.6)",
-      "page": 3,
-      "confidence": 0.88
+      "source_quote": "Chi-square test=31.54 (p=0.001), Sensitivity=55.83%, Specificity=77.24%, PPV=76.47%, NPV=56.89%, Accuracy=65.03%",
+      "page": 6,
+      "confidence": 0.99
     }
   ],
   "_meta": {
     "source_file": "Baloch_2022.pdf",
     "paper_id": "Baloch_2022",
     "sections_used": [
-      "Materials And Methods",
-      "Results"
+      "page 1",
+      "page 2",
+      "page 3",
+      "page 4",
+      "page 5",
+      "page 6",
+      "page 7",
+      "page 8"
     ],
     "model": "anthropic/claude-sonnet-4-6",
     "provider": "openrouter"
