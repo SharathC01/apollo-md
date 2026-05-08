@@ -15,25 +15,29 @@ import pandas as pd
 
 import config
 
-_SYSTEM_PROMPT = """You are a clinical evidence summarizer. Given a structured evidence table from sepsis research literature, write a concise 2-3 sentence summary.
+_SYSTEM_PROMPT = """You are a clinical evidence summarizer. Write a concise 2-3 sentence \
+summary based EXCLUSIVELY on the data provided in the table below.
 
-Rules:
-- Mention the number of studies and key findings
-- Include specific effect sizes (AUC, OR, HR) where available
-- Note any consistency or conflict across studies
-- Be precise and clinical in tone — no marketing language
-- Never invent values not present in the table
-- If data is sparse, say so honestly"""
+STRICT RULES:
+1. Only cite numbers, values, and findings explicitly present in the \
+provided table — never add context from training data
+2. If the table has limited data, say so honestly
+3. Never extrapolate beyond what the table shows
+4. Every specific number you mention must appear verbatim in the table
+5. Do not interpret or explain findings beyond what the data shows
+6. If fewer than 3 studies are present, explicitly note limited evidence"""
 
-_PHENOTYPE_SYSTEM_PROMPT = """You are a clinical evidence summarizer specializing in sepsis phenotype research.
-Given a structured evidence table, write a concise 2-3 sentence summary.
+_PHENOTYPE_SYSTEM_PROMPT = """You are a clinical evidence summarizer specializing in sepsis phenotype research. \
+Write a concise 2-3 sentence summary based EXCLUSIVELY on the data provided in the table below.
 
-Rules:
-- Note if phenotype/clustering data is limited or absent in the corpus
-- Mention any clustering methods found (k-means, latent class analysis, etc.)
-- Be honest if the evidence is insufficient for phenotype assignment
-- Clinical tone, no marketing language
-- Never invent values not present in the table"""
+STRICT RULES:
+1. Only cite numbers, values, and findings explicitly present in the \
+provided table — never add context from training data
+2. Note if phenotype/clustering data is limited or absent in the corpus
+3. Mention clustering methods only if they appear in the table
+4. Be honest if evidence is insufficient for phenotype assignment
+5. Never extrapolate beyond what the table shows
+6. If fewer than 3 studies are present, explicitly note limited evidence"""
 
 _FALLBACK = "Summary unavailable — showing raw evidence table below."
 
@@ -53,6 +57,10 @@ def _call_openrouter(user_message: str, system_prompt: str) -> str:
         ],
         temperature=0.3,
     )
+    p = response.usage.prompt_tokens
+    c = response.usage.completion_tokens
+    t = response.usage.total_tokens
+    print(f"[TOKEN USAGE] summarizer/_call_openrouter | prompt: {p} | completion: {c} | total: {t}")
     return response.choices[0].message.content
 
 
@@ -67,6 +75,9 @@ def _call_anthropic(user_message: str, system_prompt: str) -> str:
         messages=[{"role": "user", "content": user_message}],
         temperature=0.3,
     )
+    p = response.usage.input_tokens
+    c = response.usage.output_tokens
+    print(f"[TOKEN USAGE] summarizer/_call_anthropic | prompt: {p} | completion: {c} | total: {p + c}")
     return response.content[0].text
 
 
@@ -80,13 +91,27 @@ def _build_user_message(df: pd.DataFrame, parsed_query: dict) -> str:
     predictor = parsed_query.get("predictor") or "unknown predictor"
     outcome = parsed_query.get("outcome") or "unknown outcome"
 
-    available_cols = [c for c in ["Study", "Predictor", "AUC", "Effect Size", "Outcome"] if c in df.columns]
-    table_str = df[available_cols].head(8).to_string(index=False)
+    n_studies = df["Study"].nunique() if "Study" in df.columns else 0
+    n_records = len(df)
+
+    auc_values: list = []
+    if "AUC" in df.columns:
+        auc_values = df["AUC"][df["AUC"] != "not reported"].tolist()
+
+    effect_sizes: list = []
+    if "Effect Size" in df.columns:
+        effect_sizes = df["Effect Size"][df["Effect Size"] != "not reported"].tolist()
+
+    display_cols = [c for c in ["Study", "Predictor", "AUC", "Effect Size", "Outcome", "Method"] if c in df.columns]
+    table_str = df[display_cols].head(10).to_string(index=False)
 
     return (
         f"Query: {predictor} → {outcome}\n"
-        f"Studies: {df['Study'].nunique() if 'Study' in df.columns else 'unknown'} studies, {len(df)} findings\n"
-        f"Top findings (up to 8 rows):\n{table_str}"
+        f"Studies: {n_studies} studies, {n_records} findings\n"
+        f"AUC values present: {auc_values}\n"
+        f"Effect sizes present: {effect_sizes}\n\n"
+        f"Full table (use ONLY these values):\n{table_str}\n\n"
+        f"Write a 2-3 sentence clinical summary using ONLY the values above."
     )
 
 

@@ -55,6 +55,10 @@ def _call_openrouter(user_message: str) -> str:
         ],
         temperature=0,
     )
+    p = response.usage.prompt_tokens
+    c = response.usage.completion_tokens
+    t = response.usage.total_tokens
+    print(f"[TOKEN USAGE] query_parser/_call_openrouter | prompt: {p} | completion: {c} | total: {t}")
     return response.choices[0].message.content
 
 
@@ -69,6 +73,9 @@ def _call_anthropic(user_message: str) -> str:
         messages=[{"role": "user", "content": user_message}],
         temperature=0,
     )
+    p = response.usage.input_tokens
+    c = response.usage.output_tokens
+    print(f"[TOKEN USAGE] query_parser/_call_anthropic | prompt: {p} | completion: {c} | total: {p + c}")
     return response.content[0].text
 
 

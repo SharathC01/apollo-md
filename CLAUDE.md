@@ -58,7 +58,7 @@ pytest tests/
 
 - `data/raw/` — 30 PDFs
 - `data/extracted/` — 27 JSONs (3 failed ingestion)
-- 217 total predictor records: 173 high confidence, 0 unverified
+- 274 total predictor records across 28 studies
 
 ### Pipeline flow
 
@@ -67,6 +67,18 @@ pytest tests/
 3. If ≥3 hits → `build_evidence_table()` or `build_ranked_predictors()`
 4. If <3 hits → RAG fallback via `retrieve.py` over raw PDF chunks
 5. Returns pandas DataFrame
+
+### Hallucination guards (current)
+
+- **extractor.py**: 10-rule system prompt with ZERO-tolerance rules; LLM must copy `source_quote` verbatim; `association_type` (`modelled`/`descriptive`), `source_type`, `model_context`, `survivors_value`, `death_value`, `p_value` added to `mortality_predictors` schema
+- **validate_enhanced.py**: `verify_quote()` — substring-checks source_quote against raw PDF text (cached per paper); `verify_numeric()` — regex checks extracted number appears in source_quote; confidence tier gates on `quote_verified is True`
+- **summarizer.py**: system prompt forbids training-data context; pre-extracts AUC/effect_size lists from DataFrame and passes them explicitly; LLM instructed to cite only values present in table
+
+### Evidence table columns (build_evidence_table)
+
+Primary: Study, Predictor, Outcome, AUC, Effect Size, Association Type, Verified (✓/✗/?), Confidence, Page, File
+
+Secondary: Timing, Method, Cutoff, Adjustment, Model Context, Source Type, Survivors Value, Death Value, P Value, Source Quote, Quote Verified, Numeric Verified, Country, N
 
 ## graphify
 
@@ -97,6 +109,13 @@ Run two Claude Code sessions simultaneously, strictly partitioned:
 ### CLAUDE.md Maintenance
 If Claude Code starts ignoring rules or drifting, run:
 > "Update my CLAUDE.md to remove anything no longer needed, contradictory, duplicate, or unnecessary bloat impacting effectiveness."
+
+---
+
+## Windows Compatibility — Hard Rules
+
+- `normalize_predictor()` is in `src/synonyms.py` — **not** `src/extractor.py`. Always import as `from src.synonyms import normalize_predictor`.
+- All `open()` calls on files in `data/extracted/` or any UTF-8 content must pass `encoding='utf-8'` explicitly. Windows default is cp1252, which breaks on non-ASCII characters in extracted JSON.
 
 ---
 

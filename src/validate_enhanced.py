@@ -11,36 +11,99 @@ Functions:
 """
 
 import json
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+_pdf_text_cache: dict[str, str | None] = {}
 
-def validate_record(predictor: dict, study_meta: dict) -> dict:
+
+def _normalize_ws(text: str) -> str:
+    if not text:
+        return ""
+    text = text.replace("\t", " ").replace("\n", " ")
+    text = re.sub(r" +", " ", text)
+    return text.strip()
+
+
+def verify_quote(source_quote: str, paper_id: str) -> bool | None:
+    """
+    Return True if source_quote found verbatim in the raw PDF text,
+    False if PDF found but quote absent, None if PDF missing.
+    """
+    if not source_quote or len(source_quote) <= 10:
+        return None
+
+    if paper_id not in _pdf_text_cache:
+        pdf_path = Path(__file__).parent.parent / "data" / "raw" / f"{paper_id}.pdf"
+        if not pdf_path.exists():
+            _pdf_text_cache[paper_id] = None
+        else:
+            try:
+                from src.ingest import ingest_pdf
+                chunks = ingest_pdf(str(pdf_path))
+                _pdf_text_cache[paper_id] = _normalize_ws(" ".join(c["text"] for c in chunks))
+            except Exception:
+                _pdf_text_cache[paper_id] = None
+
+    full_text = _pdf_text_cache[paper_id]
+    if full_text is None:
+        return None
+
+    return _normalize_ws(source_quote) in full_text
+
+
+def verify_numeric(value, source_quote: str) -> bool:
+    """
+    Return True if the primary numeric in value appears among numbers in source_quote.
+    Returns True when value is null/not-reported (nothing to verify).
+    """
+    if value is None:
+        return True
+    value_str = str(value).strip().lower()
+    if not value_str or value_str == "not reported":
+        return True
+
+    value_nums = re.findall(r"\d+\.?\d*", value_str)
+    if not value_nums:
+        return True
+
+    quote_nums = set(re.findall(r"\d+\.?\d*", source_quote))
+    return any(n in quote_nums for n in value_nums)
+
+
+def validate_record(predictor: dict, study_meta: dict, paper_id: str | None = None) -> dict:
     """
     Flatten one mortality_predictor dict + parent study metadata into a
     single validated record.
 
     Confidence tiers:
-      high       — has AUC or effect_size, verified quote, raw confidence >= 0.9
-      medium     — has AUC or effect_size, verified quote
-      low        — verified quote only
-      unverified — missing or too-short source quote
+      high       — has AUC or effect_size, quote_verified True, raw_confidence >= 0.9
+      medium     — has AUC or effect_size, quote_verified True
+      low        — quote_verified True but missing effect sizes
+      unverified — quote_verified False or None
     """
     source_quote = predictor.get("source_quote") or ""
-    verified = bool(source_quote and len(source_quote) > 10)
-
     auc = predictor.get("auc")
     effect_size = predictor.get("effect_size")
-    has_evidence = bool(auc or effect_size)
+    significant = predictor.get("significant")
+    association_type = predictor.get("association_type") or "modelled"
+    # Non-significant modelled results are real findings — count as evidence
+    has_evidence = bool(auc or effect_size) or (
+        significant is False and association_type == "modelled"
+    )
     raw_confidence = float(predictor.get("confidence") or 0)
 
-    if has_evidence and verified and raw_confidence >= 0.9:
+    quote_verified = verify_quote(source_quote, paper_id) if paper_id else None
+    numeric_verified = verify_numeric(auc or effect_size, source_quote)
+
+    if has_evidence and quote_verified is True and raw_confidence >= 0.9:
         confidence_tier = "high"
-    elif has_evidence and verified:
+    elif has_evidence and quote_verified is True:
         confidence_tier = "medium"
-    elif verified:
+    elif quote_verified is True:
         confidence_tier = "low"
     else:
         confidence_tier = "unverified"
@@ -57,16 +120,23 @@ def validate_record(predictor: dict, study_meta: dict) -> dict:
         "outcome": predictor.get("outcome_definition") or "not reported",
         "timing": predictor.get("timing") or "not reported",
         "method": predictor.get("statistical_method") or "not reported",
+        "association_type": predictor.get("association_type") or "modelled",
         "effect_size": effect_size or "not reported",
         "auc": auc or "not reported",
         "sensitivity": predictor.get("sensitivity") or "not reported",
         "specificity": predictor.get("specificity") or "not reported",
         "cutoff": predictor.get("cutoff_value") or "not reported",
+        "survivors_value": predictor.get("survivors_value") or "not reported",
+        "death_value": predictor.get("death_value") or "not reported",
+        "p_value": predictor.get("p_value") or "not reported",
         "adjustment": predictor.get("confounders_adjusted") or "not reported",
+        "model_context": predictor.get("model_context") or "not specified",
+        "source_type": predictor.get("source_type") or "prose",
         "source_quote": source_quote or "not reported",
         "page": predictor.get("page"),
         "raw_confidence": raw_confidence,
-        "verified": verified,
+        "quote_verified": quote_verified,
+        "numeric_verified": numeric_verified,
         "confidence": confidence_tier,
     }
 
@@ -81,8 +151,10 @@ def validate_study(json_path: str) -> list[dict]:
     with open(json_path, encoding="utf-8") as f:
         study = json.load(f)
 
+    meta = study.get("_meta") or {}
+    paper_id = meta.get("paper_id") or Path(json_path).stem
     predictors = study.get("mortality_predictors") or []
-    return [validate_record(p, study) for p in predictors]
+    return [validate_record(p, study, paper_id=paper_id) for p in predictors]
 
 
 def validate_all(extracted_dir: str = "data/extracted") -> list[dict]:

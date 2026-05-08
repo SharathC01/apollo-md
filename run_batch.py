@@ -13,7 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from src.extractor import extract_pdf
+from src.extractor import extract_pdf, _session_tokens
 
 RAW_DIR = Path(__file__).parent / "data" / "raw"
 EXTRACTED_DIR = Path(__file__).parent / "data" / "extracted"
@@ -60,6 +60,11 @@ def main():
             short_err = err.splitlines()[0][:120]
             print(f"  ✗ {name}: {short_err}")
     print("=" * 60)
+    print(
+        f"[SESSION TOTAL] prompt: {_session_tokens['prompt']} | "
+        f"completion: {_session_tokens['completion']} | "
+        f"total: {_session_tokens['total']} tokens"
+    )
 
 
 if __name__ == "__main__":

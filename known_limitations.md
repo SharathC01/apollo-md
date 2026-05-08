@@ -1,34 +1,22 @@
-Create KNOWN_LIMITATIONS.md in the project root with this content:
+## 3. Quote Verification Rate: 69% (247/360 records)
 
-# Known Limitations — Apollo MD
+**Issue:** 113 records have source_quote values that cannot be found 
+verbatim in the extracted PDF text after whitespace and typography 
+normalization. These are marked quote_verified=False and confidence 
+tier "unverified" in the evidence table.
 
-## 1. Extraction Schema: Modelled Predictors Only
+**Root causes identified:**
+- LLM slightly paraphrases quotes despite verbatim instruction
+- Cross-page sentence splits not captured by section-aware ingest
+- Multi-column reflow artifacts in two-column PDFs
 
-**Issue:** The extractor captures predictors with modelled effect sizes 
-(OR, HR, AUC from regression or ROC analysis) only. Descriptive 
-associations — where a biomarker is compared between survival/death 
-groups with median values and p-values only (no regression model) — 
-are not captured.
-
-**Example:** Cao_2021 Table 4 reports PCT, LAC, SOFA, APACHE II with 
-median values for survivors vs non-survivors + p-values. These are 
-not extracted as mortality predictors because no OR/HR/AUC is reported.
-
-**Impact:** Queries for biomarkers like PCT return fewer studies than 
-actually mention the biomarker in the corpus.
-
-**Fix if time allows:** 
-- Add a new schema field: descriptive_associations (list)
-- Each item: {variable, survivors_value, death_value, p_value, source_quote, page}
-- Update extraction prompt to capture these separately
-- Re-extract all 28 papers
-
-## 2. Language Filter Not Implemented
-
-**Issue:** Non-English papers (Kochkin_2021, Kozlov_2022) were not 
-explicitly filtered — they failed ingestion due to section detection 
-mismatch, not language detection.
+**Current mitigation:**
+- quote_verified flag shown explicitly in UI (✓/✗/?)
+- Unverified records still displayed but visually distinguished
+- Confidence tier downgraded for unverified records
 
 **Fix if time allows:**
-- Detect language of extracted text (langdetect library)
-- Skip non-English papers in run_batch.py with explicit log message
+- Stricter extraction prompt: require quote to be max 15 words 
+  (shorter quotes are easier to verify verbatim)
+- Fuzzy matching in verify_quote() with threshold >0.95 similarity
+  instead of exact substring match
