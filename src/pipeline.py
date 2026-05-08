@@ -25,6 +25,12 @@ from src.query_parser import parse_query
 from src.summarizer import summarize_evidence, summarize_phenotype
 import src.retrieve as _retrieve
 
+CORE_PAPERS = [
+    "Seymour_2016", "Baloch_2022", "Besen_2016", "Wang_2020",
+    "Li_2020", "Roh_2019", "Zhang_2019", "Koozi_2023",
+    "Todi_2024", "Varga_2024"
+]
+
 # Cache validated records for the lifetime of the process
 _validated_records: list[dict] | None = None
 
@@ -42,6 +48,7 @@ def run_pipeline(
     use_case: str = "mortality",
     top_k: int = 5,
     debug: bool = False,
+    core_only: bool = True,
 ) -> tuple[pd.DataFrame, str]:
     """
     Execute the full query pipeline.
@@ -70,6 +77,8 @@ def run_pipeline(
 
     # Step 2: load validated records
     all_records = _load_records()
+    if core_only:
+        all_records = [r for r in all_records if r.get("study_id", "").split()[0] in CORE_PAPERS]
 
     # Step 3: predictor-anchored structured path
     if parsed.get("predictor"):

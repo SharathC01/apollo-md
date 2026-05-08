@@ -4,8 +4,12 @@ Sepsis evidence extraction and synthesis interface.
 """
 
 import math
+import os
 import re
+import sys
 from datetime import datetime
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pandas as pd
 import plotly.express as px
@@ -22,7 +26,7 @@ st.set_page_config(
 )
 
 # ── Constants ────────────────────────────────────────────────────────────────
-BADGE_TEXT = "28 papers · 274 records · 258 verified"
+BADGE_TEXT = "28 papers · 360 records · 247 verified"
 
 EXAMPLE_QUERIES = {
     "mortality": "What predicts 28-day mortality in septic shock?",
@@ -31,8 +35,8 @@ EXAMPLE_QUERIES = {
 }
 
 DISPLAY_COLUMNS = [
-    "Study", "Design", "N", "Predictor", "PICO",
-    "Effect Size", "AUC", "Evidence Grade", "Verified", "Confidence",
+    "Study", "Predictor", "Outcome", "AUC", "Effect Size",
+    "Association Type", "Verified", "Confidence", "Page", "File",
 ]
 
 _CONF_EMOJI = {"high": "🟢 High", "medium": "🟡 Medium", "low": "🔴 Low"}
