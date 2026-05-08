@@ -7,7 +7,7 @@ pandas DataFrames, with sorting, AUC extraction, and query filtering.
 Functions:
   build_evidence_table(records) -> pd.DataFrame
   build_ranked_predictors(records) -> pd.DataFrame
-  filter_by_query(records, query, parsed_query=None) -> list[dict]
+  filter_by_query(records, parsed_query, debug=False) -> list[dict]
   save_table(df, path) -> None
 """
 
@@ -120,20 +120,19 @@ def _first_match(text: str, words: list[str]) -> str | None:
 
 def filter_by_query(
     records: list[dict],
-    query: str,
-    parsed_query: dict | None = None,
+    parsed_query: dict,
     debug: bool = False,
 ) -> list[dict]:
     """
-    Filter records by query keywords.
+    Filter records by parsed predictor term only. No keyword fallback.
 
-    If parsed_query has a non-null "predictor" field, first try a
-    predictor-anchored filter (partial case-insensitive match on the
-    record's predictor field). If that yields >= 3 results, return them.
-    Otherwise fall back to OR matching across predictor/outcome/source_quote.
+    Matching order:
+    1. Full phrase in record["predictor"]
+    2. If 0 results: individual meaningful words (len >= 4) in record["predictor"]
+    3. If still 0: phrase + words in record["source_quote"]
 
-    When debug=True, each returned record gets a "match_reason" field
-    describing which field and substring triggered the match.
+    Returns empty list if parsed_query has no predictor or nothing matches.
+    When debug=True, each returned record gets a "match_reason" field.
     """
     def _tag(r: dict, reason: str) -> dict:
         if debug:
@@ -142,44 +141,34 @@ def filter_by_query(
             return out
         return r
 
-    # Predictor-anchored path
-    if parsed_query and parsed_query.get("predictor"):
-        pred_term = parsed_query["predictor"].lower()
-        # Try full phrase first (e.g. "lactate clearance")
-        anchored = []
-        for r in records:
-            pred_field = str(r.get("predictor") or "").lower()
-            if pred_term in pred_field:
-                anchored.append(_tag(r, f"matched_predictor: {pred_term}"))
-        if len(anchored) < 3:
-            # Try individual meaningful words with OR logic (e.g. "lactate" from "lactate levels")
-            pred_words = [w for w in pred_term.split() if len(w) >= 4]
-            if pred_words:
-                anchored = []
-                for r in records:
-                    pred_field = str(r.get("predictor") or "").lower()
-                    hit = _first_match(pred_field, pred_words)
-                    if hit:
-                        anchored.append(_tag(r, f"matched_predictor: {hit}"))
-        if len(anchored) >= 3:
-            return anchored
+    pred_term = (parsed_query.get("predictor") or "").lower().strip()
+    if not pred_term:
+        return []
 
-    # OR keyword fallback — check each field separately for precise reason
-    words = [w for w in query.lower().split() if w]
+    # Step 1: full phrase in predictor field
     results = []
     for r in records:
-        pred_field = str(r.get("predictor") or "")
-        outcome_field = str(r.get("outcome") or "")
-        quote_field = str(r.get("source_quote") or "")
-        hit_pred = _first_match(pred_field, words)
-        hit_out = _first_match(outcome_field, words)
-        hit_quote = _first_match(quote_field, words)
-        if hit_pred:
-            results.append(_tag(r, f"matched_predictor: {hit_pred}"))
-        elif hit_out:
-            results.append(_tag(r, f"matched_outcome: {hit_out}"))
-        elif hit_quote:
-            results.append(_tag(r, f"matched_source_quote: {hit_quote}"))
+        if pred_term in str(r.get("predictor") or "").lower():
+            results.append(_tag(r, f"matched_predictor: {pred_term}"))
+    if results:
+        return results
+
+    # Step 2: individual meaningful words in predictor field
+    pred_words = [w for w in pred_term.split() if len(w) >= 4]
+    if pred_words:
+        for r in records:
+            hit = _first_match(str(r.get("predictor") or ""), pred_words)
+            if hit:
+                results.append(_tag(r, f"matched_predictor: {hit}"))
+        if results:
+            return results
+
+    # Step 3: phrase + words in source_quote
+    search_terms = ([pred_term] + pred_words) if pred_words else [pred_term]
+    for r in records:
+        hit = _first_match(str(r.get("source_quote") or ""), search_terms)
+        if hit:
+            results.append(_tag(r, f"matched_source_quote: {hit}"))
     return results
 
 

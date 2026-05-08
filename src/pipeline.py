@@ -2,10 +2,10 @@
 pipeline.py — Unified query pipeline connecting all components.
 
 Step 1: Load validated records from data/extracted/
-Step 2: Filter by keyword query
-Step 3: If >= 3 matches, build evidence table
-Step 4: If < 3 matches, fall back to RAG over raw PDF chunks
-Step 5: Return appropriate DataFrame based on use_case
+Step 2: Parse query → extract predictor/outcome intent
+Step 3: If predictor found → filter corpus → structured table
+Step 4: If no predictor or no corpus hit → RAG semantic search
+Step 5: Return (df, summary)
 
 Functions:
   run_pipeline(query, use_case, top_k) -> pd.DataFrame
@@ -48,16 +48,17 @@ def run_pipeline(
 
     Returns (df, summary) where:
       df      — structured evidence DataFrame
-      summary — 2-3 sentence LLM summary (empty string for RAG fallback path)
+      summary — 2-3 sentence LLM summary (empty string for RAG path)
 
     use_case options:
       "mortality"  -> build_evidence_table() on filtered records
       "biomarker"  -> build_ranked_predictors() (AUC-ranked) on filtered records
       "phenotype"  -> build_evidence_table() on filtered records
 
-    Falls back to semantic search over structured evidence records when fewer
-    than 3 keyword matches are found. Both paths return the same evidence table
-    schema; result_type column distinguishes "structured" vs "semantic".
+    Routing:
+      predictor identified + corpus hit  → structured path (result_type="structured")
+      predictor identified + no hit      → RAG fallback   (result_type="semantic")
+      no predictor identified            → RAG fallback   (result_type="semantic")
     """
     # Step 1: parse query intent
     parsed = parse_query(query)
@@ -66,48 +67,47 @@ def run_pipeline(
         f"outcome={parsed.get('outcome')} "
         f"keywords={parsed.get('keywords')}"
     )
-    keyword_query = " ".join(parsed.get("keywords") or query.split())
 
     # Step 2: load validated records
-    records = _load_records()
+    all_records = _load_records()
 
-    # Step 3: keyword filter using parsed keywords
-    filtered = filter_by_query(records, keyword_query, parsed_query=parsed, debug=debug)
+    # Step 3: predictor-anchored structured path
+    if parsed.get("predictor"):
+        filtered = filter_by_query(all_records, parsed_query=parsed, debug=debug)
 
-    if debug and filtered:
-        print("\n[DEBUG] Filter matches:")
-        hdr = f"{'Study':<20} {'Predictor':<35} {'Outcome':<30} {'Match Reason'}"
-        print(hdr)
-        print("-" * len(hdr))
-        for r in filtered:
-            print(
-                f"{str(r.get('study_id') or ''):<20} "
-                f"{str(r.get('predictor') or '')[:34]:<35} "
-                f"{str(r.get('outcome') or '')[:29]:<30} "
-                f"{r.get('match_reason', '')}"
-            )
-        print()
+        if debug and filtered:
+            print("\n[DEBUG] Filter matches:")
+            hdr = f"{'Study':<20} {'Predictor':<35} {'Outcome':<30} {'Match Reason'}"
+            print(hdr)
+            print("-" * len(hdr))
+            for r in filtered:
+                print(
+                    f"{str(r.get('study_id') or ''):<20} "
+                    f"{str(r.get('predictor') or '')[:34]:<35} "
+                    f"{str(r.get('outcome') or '')[:29]:<30} "
+                    f"{r.get('match_reason', '')}"
+                )
+            print()
 
-    # Step 4: enough keyword matches — use structured path
-    if len(filtered) >= 3:
-        if use_case == "biomarker":
-            df = build_ranked_predictors(filtered)
-        else:
-            df = build_evidence_table(filtered)
-        df["result_type"] = "structured"
-        if use_case == "phenotype":
-            summary = summarize_phenotype(df, parsed)
-        else:
-            summary = summarize_evidence(df, parsed)
-        return df, summary
+        if len(filtered) > 0:
+            if use_case == "biomarker":
+                df = build_ranked_predictors(filtered)
+            else:
+                df = build_evidence_table(filtered)
+            df["result_type"] = "structured"
+            if use_case == "phenotype":
+                summary = summarize_phenotype(df, parsed)
+            else:
+                summary = summarize_evidence(df, parsed)
+            return df, summary
 
-    # Step 5: RAG fallback — semantic search over structured evidence records
-    print(
-        f"Only {len(filtered)} keyword match(es) for '{query}' — "
-        f"falling back to semantic search over evidence records..."
-    )
-    records, embeddings = _retrieve.build_evidence_index()
-    top_records = _retrieve.retrieve(query, records, embeddings, top_k=top_k)
+        print(f"Predictor '{parsed['predictor']}' not found in corpus — falling back to RAG...")
+    else:
+        print(f"No predictor identified in query — falling back to RAG...")
+
+    # Step 4: RAG fallback — semantic search over structured evidence records
+    rag_records, embeddings = _retrieve.build_evidence_index()
+    top_records = _retrieve.retrieve(query, rag_records, embeddings, top_k=top_k)
     df = build_evidence_table(top_records)
     df["result_type"] = "semantic"
     if use_case == "phenotype":
