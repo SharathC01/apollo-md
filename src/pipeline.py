@@ -41,6 +41,7 @@ def run_pipeline(
     query: str,
     use_case: str = "mortality",
     top_k: int = 5,
+    debug: bool = False,
 ) -> tuple[pd.DataFrame, str]:
     """
     Execute the full query pipeline.
@@ -71,7 +72,21 @@ def run_pipeline(
     records = _load_records()
 
     # Step 3: keyword filter using parsed keywords
-    filtered = filter_by_query(records, keyword_query)
+    filtered = filter_by_query(records, keyword_query, parsed_query=parsed, debug=debug)
+
+    if debug and filtered:
+        print("\n[DEBUG] Filter matches:")
+        hdr = f"{'Study':<20} {'Predictor':<35} {'Outcome':<30} {'Match Reason'}"
+        print(hdr)
+        print("-" * len(hdr))
+        for r in filtered:
+            print(
+                f"{str(r.get('study_id') or ''):<20} "
+                f"{str(r.get('predictor') or '')[:34]:<35} "
+                f"{str(r.get('outcome') or '')[:29]:<30} "
+                f"{r.get('match_reason', '')}"
+            )
+        print()
 
     # Step 4: enough keyword matches — use structured path
     if len(filtered) >= 3:
